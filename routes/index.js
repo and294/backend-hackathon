@@ -14,12 +14,12 @@ router.post("/", (req, res) => {
     req.body.date.slice(0, 2);
   let formatedDate = moment(newDate).format("YYYY-MM-DD");
   Voyage.find({
-    departure: req.body.departure,
-    arrival: req.body.arrival,
+    departure: { $regex: new RegExp(req.body.departure, "i") },
+    arrival: { $regex: new RegExp(req.body.arrival, "i") },
   }).then((data) => {
     if (data.length > 1) {
       let filtered = data.filter(
-        (e) => moment(e.date).format("YYYY-MM-DD") === formatedDate
+        (e) => moment(e.date).format("YYYY-MM-DD") === req.body.date
       );
       res.json({ trips: filtered });
     } else {
@@ -28,17 +28,19 @@ router.post("/", (req, res) => {
   });
 });
 
-router.post("/add", (req, res) => {
-  const newTrip = new Trip({
-    departure: req.body.departure,
-    arrival: req.body.arrival,
-    date: new Date(),
-    price: req.body.price,
+router.post("/add/:id", (req, res) => {
+  const {id} = req.params;
+  Voyage.findById(id).then(data => {
+     const newTrip = new Trip({
+    departure: data.departure,
+    arrival: data.arrival,
+    date: data.date,
+    price: data.price,
   });
-
   newTrip.save().then((data) => {
     res.json({ result: true, trip: data });
-  });
+  }); 
+  })
 });
 
 

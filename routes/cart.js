@@ -6,16 +6,15 @@ const Booked = require("../models/booked");
 const Trip = require("../models/trips");
 
 router.post("/book", (req, res) => {
-  Trip.find({
+  Trip.findOne({
     departure: req.body.departure,
     arrival: req.body.arrival,
   }).then((data) => {
-    console.log(data)
-    console.log(data)
     if(data)
     {
-        console.log(data)
-      let hour = moment(data.date).hour() + ":" + moment(data.date).minute();
+      //for(let i = 0; i < data.length; i++){
+              let hour =
+        moment(data.date).hour() + ":" + moment(data.date).minute();
       let dateHour = new Date(data.date).getHours();
       console.log(dateHour)
         console.log(data.date);
@@ -29,7 +28,7 @@ router.post("/book", (req, res) => {
         newBooking.save().then((data) => {
           res.json({ result: true, booking: data });
         });
-      
+      //}    
     } else {
         res.json({ result: false});
       }
@@ -43,7 +42,8 @@ router.get("/", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Trip.findByIdAndDelete(req.params.id).then((data) => {
+  Trip.deleteOne({_id: req.params.id}).then((data) => {
+    console.log(data)
     if (data.deletedCount > 0) {
       res.json({ result: true, trips: data });
     } else {
