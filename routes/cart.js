@@ -41,10 +41,11 @@ router.get("/", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
-  Trip.deleteOne({_id: req.params.id}).then((data) => {
-    console.log(data)
-    if (data.deletedCount > 0) {
+router.delete("/delete/:id", (req, res) => {
+  const { id } = req.params;
+  Trip.findOneAndDelete(id).then((data) => {
+    console.log(data);
+    if (data != null) {
       res.json({ result: true, trips: data });
     } else {
       res.json({ result: false, error: "Trip not found" });
